@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.personalblog.personalblog.mapper.LinkMapper">
+
+    <resultMap id="BaseResultMap" type="com.csk2024.personalblog.entity.Link">
+            <id property="linkId" column="link_id" jdbcType="VARCHAR"/>
+            <result property="linkTitle" column="link_title" jdbcType="VARCHAR"/>
+            <result property="linkUrl" column="link_url" jdbcType="VARCHAR"/>
+            <result property="linkLogoUrl" column="link_logo_url" jdbcType="VARCHAR"/>
+            <result property="linkAddTime" column="link_add_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        link_id,link_title,link_url,
+        link_logo_url,link_add_time
+    </sql>
+</mapper>

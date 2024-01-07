@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.personalblog.personalblog.mapper.AdMapper">
+
+    <resultMap id="BaseResultMap" type="com.csk2024.personalblog.entity.Ad">
+            <id property="adId" column="ad_id" jdbcType="VARCHAR"/>
+            <result property="adTypeId" column="ad_type_id" jdbcType="VARCHAR"/>
+            <result property="adTitle" column="ad_title" jdbcType="VARCHAR"/>
+            <result property="adUrl" column="ad_url" jdbcType="VARCHAR"/>
+            <result property="adSort" column="ad_sort" jdbcType="INTEGER"/>
+            <result property="adBeginTime" column="ad_begin_time" jdbcType="TIMESTAMP"/>
+            <result property="adEndTime" column="ad_end_time" jdbcType="TIMESTAMP"/>
+            <result property="adAddTime" column="ad_add_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ad_id,ad_type_id,ad_title,
+        ad_url,ad_sort,ad_begin_time,
+        ad_end_time,ad_add_time
+    </sql>
+</mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.personalblog.personalblog.mapper.AdTypeMapper">
+
+    <resultMap id="BaseResultMap" type="com.csk2024.personalblog.entity.AdType">
+            <id property="adTypeId" column="ad_type_id" jdbcType="VARCHAR"/>
+            <result property="adTypeTitle" column="ad_type_title" jdbcType="VARCHAR"/>
+            <result property="adTypeTag" column="ad_type_tag" jdbcType="VARCHAR"/>
+            <result property="adTypeSort" column="ad_type_sort" jdbcType="INTEGER"/>
+            <result property="adTypeAddTime" column="ad_type_add_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ad_type_id,ad_type_title,ad_type_tag,
+        ad_type_sort,ad_type_add_time
+    </sql>
+</mapper>
