@@ -6,7 +6,9 @@
             <div class="form-group">
                 <label for="userName" class="col-sm-1">用户名:</label>
                 <div class="col-sm-2">
-                    <input type="text" class="form-control" name="userName" id="userName" placeholder="用户名">
+                    <input type="text" class="form-control" name="userName" id="userName"
+                           placeholder="用户名"
+                           value="<#if (userName?? && userName?length>0)>${userName!}<#else></#if>">
                 </div>
                 <div class="col-sm-1">
                     <button type="submit" class="btn btn-default">查询</button>
@@ -46,9 +48,16 @@
                         </td>
                         <td>
 
-                            <button type="button" class="btn btn-default"><i class="icon icon-spin icon-cog"></i>修改</button>
-                            <button type="button" onclick="delUser('${(user.userId)!}')" class="btn btn-default">
-                                <i class="icon icon-remove-sign"></i>删除</button>
+                            <button type="button"
+                                    onclick="userUpdate('${(user.userId)!}','${(user.userName)!}','${(user.userFrozen)!}')"
+                                    class="btn btn-default">
+                                <i class="icon icon-spin icon-cog"></i>修改
+                            </button>
+                            <button type="button"
+                                    onclick="delUser('${(user.userId)!}','${(userPage.pageNumber)!}','${(userPage.list)?size}')"
+                                    class="btn btn-default">
+                                <i class="icon icon-remove-sign"></i>删除
+                            </button>
                         </td>
                     </tr>
                 </#list>
@@ -58,8 +67,8 @@
         <div class="panel-footer">
             <ul class="pager" id="myPager" data-ride="pager"
                 data-page=${userPage.pageNumber} data-rec-per-page=${userPage.pageSize} data-rec-total=${userPage.total}
-                data-elements="prev_icon,nav,next_icon,page_of_total_text,page_size_text"
-                data-link-creator="/csk2024/user/list?pageNumber={page}"></ul>
+                data-elements="prev_icon,nav,next_icon,page_of_total_text,total_text"
+                data-link-creator="/csk2024/user/list?pageNumber={page}<#if (userName?? && userName?length>0)>&userName=${userName!}</#if>"></ul>
         </div>
     </div>
 <#else >
@@ -70,18 +79,115 @@
     </div>
 </#if>
 
+
+<div class="modal fade" id="userUpdateModal">
+    <div class="modal-dialog">
+        <form class="form-horizontal" action="/csk2024/user/update" method="post">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                                class="sr-only">关闭</span></button>
+                    <h4 class="modal-title">修改用户</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="userIdUpdate">
+                    <div class="form-group">
+                        <label for="userNameUpdate" class="col-sm-2">用户名:</label>
+                        <div class="col-md-6 col-sm-10">
+                            <input type="text" disabled="disabled" class="form-control" id="userNameUpdate">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPasswordUpdate" class="col-sm-2">用户密码:</label>
+                        <div class="col-md-6 col-sm-10">
+                            <input type="password" class="form-control" id="userPasswordUpdate">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2">是否冻结:</label>
+                        <div class="col-sm-2">
+                            <label>
+                                <input type="radio" name="userFrozen" value="0"> 正常
+                            </label>
+                            <label>
+                                <input type="radio" name="userFrozen" value="1"> 冻结
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="userUpdateAction('${}')">保存</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-    function delUser(userId) {
+    function userUpdateAction() {
+        var userId = $('#userIdUpdate').val();
+        var userName = $('#userNameUpdate').val();
+        var userPassword = $('#userPasswordUpdate').val();
+        var userFrozen = $("input[name='userFrozen']:checked").val();
+
+
+
+        if (!checkNotNull(userId)) {
+            zuiMeg('提示信息：发生错误，请刷新');
+            return;
+        }
+        console.log(userId);
+        console.log(userPassword);
+        console.log(userFrozen);
+
+        $.post("/csk2024/user/update",
+            {
+                userId: userId,
+                userName: userName,
+                userPassword: userPassword,
+                userFrozen: userFrozen
+            },
+            function (data) {
+                if (data.code === 200) {
+                    alert(data.message);
+                    location.reload();
+                    return;
+                }
+                zuiMeg('提示信息' + data.message);
+            })
+    }
+
+    function userUpdate(userId, userName, userFrozen) {
+        $('#userUpdateModal').modal('toggle', 'center');
+        $('#userIdUpdate').val(userId);
+        $('#userNameUpdate').val(userName);
+        $("input[name='userFrozen'][value='" + userFrozen + "']").prop("checked", true);
+    }
+
+    function delUser(userId, pageNumber, pageSize) {
+        var number = parseInt(pageNumber);
+        var size = parseInt(pageSize);
         if (confirm("确定要删除吗？")) {
             if (!checkNotNull(userId)) {
-                new $.zui.Messager('提示消息：出现错误，请刷新页面', {
-                    type: 'warning' // 定义颜色主题
-                }).show();
+                zuiMeg('提示消息：出现错误，请刷新页面');
                 return;
             }
             $.post("/csk2024/user/del", {userId: userId}, function (data) {
                 if (data.code === 200) {
                     alert(data.message);
+                    if (number === 1 && size === 1) {
+                        window.location.href = "/csk2024/user/list";
+                        return;
+                    } else if (number > 1 && size === 1) {
+                        var url = new URL(window.location.href);
+                        var params = url.searchParams;
+                        params.set('pageNumber', (number - 1).toString());
+                        url.search = params.toString();
+                        window.location.href = url.toString();
+                        return;
+                    }
                     location.reload();
                     return;
                 }
@@ -92,12 +198,7 @@
         }
     }
 
-    function checkNotNull(value) {
-        if (value === null || value === undefined) {
-            throw new Error('Value cannot be null or undefined');
-        }
-        return value;
-    }
+
 </script>
 
 <#include "../import/bottom.ftl">
