@@ -1,4 +1,5 @@
-<#include "../import/top.ftl">
+<#-- 管理员端基础数据页面 -->
+<#include "../import/adminTop.ftl">
 
 <div class="panel">
     <div class="panel-body">
@@ -10,4 +11,4 @@
     </div>
 </div>
 
-<#include "../import/bottom.ftl">
+<#include "../import/adminBottom.ftl">

@@ -4,6 +4,9 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * 前端返回分页数据基础类
+ */
 @Data
 public class BasePageDto {
     @NotNull(message = "未找到当前页码")

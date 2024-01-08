@@ -1,5 +1,7 @@
-<#include "../import/top.ftl">
+<#-- 用户列表页面 -->
+<#include "../import/adminTop.ftl">
 
+<#--  查询面板  -->
 <div class="panel">
     <div class="panel-body">
         <form class="form-horizontal" action="/csk2024/user/list" method="get">
@@ -21,6 +23,7 @@
     </div>
 </div>
 
+<#--  列表面板  -->
 <#if userPage?? && userPage.list?size gt 0>
     <h4><i class="icon icon-info-sign"></i>被冻结的用户无法登陆</h4>
     <div class="panel">
@@ -79,7 +82,7 @@
     </div>
 </#if>
 
-
+<#-- 修改用户弹出框 -->
 <div class="modal fade" id="userUpdateModal">
     <div class="modal-dialog">
         <form class="form-horizontal" action="/csk2024/user/update" method="post">
@@ -126,6 +129,7 @@
 </div>
 
 <script>
+    <#--  用户修改提交  -->
     function userUpdateAction() {
         var userId = $('#userIdUpdate').val();
         var userName = $('#userNameUpdate').val();
@@ -135,7 +139,7 @@
 
 
         if (!checkNotNull(userId)) {
-            zuiMeg('提示信息：发生错误，请刷新');
+            zuiMsg('提示信息：发生错误，请刷新');
             return;
         }
         console.log(userId);
@@ -146,7 +150,7 @@
             {
                 userId: userId,
                 userName: userName,
-                userPassword: userPassword,
+                userPassword: sha256(userPassword),
                 userFrozen: userFrozen
             },
             function (data) {
@@ -155,10 +159,11 @@
                     location.reload();
                     return;
                 }
-                zuiMeg('提示信息' + data.message);
+                zuiMsg('提示信息' + data.message);
             })
     }
 
+    <#--  用户修改弹出框  -->
     function userUpdate(userId, userName, userFrozen) {
         $('#userUpdateModal').modal('toggle', 'center');
         $('#userIdUpdate').val(userId);
@@ -166,12 +171,13 @@
         $("input[name='userFrozen'][value='" + userFrozen + "']").prop("checked", true);
     }
 
+    <#--  删除用户  -->
     function delUser(userId, pageNumber, pageSize) {
         var number = parseInt(pageNumber);
         var size = parseInt(pageSize);
         if (confirm("确定要删除吗？")) {
             if (!checkNotNull(userId)) {
-                zuiMeg('提示消息：出现错误，请刷新页面');
+                zuiMsg('提示消息：出现错误，请刷新页面');
                 return;
             }
             $.post("/csk2024/user/del", {userId: userId}, function (data) {
@@ -191,9 +197,7 @@
                     location.reload();
                     return;
                 }
-                new $.zui.Messager('提示消息：' + data.message, {
-                    type: 'warning' // 定义颜色主题
-                }).show();
+                zuiMsg('提示消息：' + data.message);
             });
         }
     }
@@ -201,4 +205,4 @@
 
 </script>
 
-<#include "../import/bottom.ftl">
+<#include "../import/adminBottom.ftl">

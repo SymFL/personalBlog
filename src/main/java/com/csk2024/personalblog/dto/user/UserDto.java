@@ -5,6 +5,9 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 
+/**
+ * 前端返回用户数据类
+ */
 @Data
 public class UserDto extends BasePageDto {
     @NotBlank(message = "用户 id 不能为空")

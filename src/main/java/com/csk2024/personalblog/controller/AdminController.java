@@ -2,7 +2,6 @@ package com.csk2024.personalblog.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.SecureUtil;
 import cn.hutool.system.HostInfo;
 import cn.hutool.system.OsInfo;
 import cn.hutool.system.SystemUtil;
@@ -26,8 +25,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Date;
 import java.util.Objects;
+
 
 @Controller
 @RequestMapping("/csk2024")
@@ -84,6 +83,9 @@ public class AdminController {
 
     }
 
+    /**
+     * 用户删除
+     */
     @PostMapping("/user/del")
     @ResponseBody
     public CommonResult userDelete(String userId){
@@ -100,6 +102,9 @@ public class AdminController {
         return CommonResult.failed("删除失败");
     }
 
+    /**
+     * 用户修改
+     */
     @PostMapping("/user/update")
     @ResponseBody
     public CommonResult userUpdate(UserDto userDto){
@@ -108,10 +113,7 @@ public class AdminController {
             return CommonResult.failed("用户 id 错误");
         }
         String userPassword = userDto.getUserPassword();
-        Date userRegisterTime = user.getUserRegisterTime();
-        if(StrUtil.isNotBlank(userPassword)){
-            userDto.setUserPassword(SecureUtil.md5(userPassword + userRegisterTime));
-        }else {
+        if(StrUtil.isBlank(userPassword)){
             userDto.setUserPassword(null);
         }
         BeanUtil.copyProperties(userDto,user);
