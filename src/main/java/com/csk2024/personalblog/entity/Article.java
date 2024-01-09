@@ -1,5 +1,6 @@
 package com.csk2024.personalblog.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -25,6 +26,12 @@ public class Article implements Serializable {
      */
     @TableField(value = "user_id")
     private String userId;
+
+    /**
+     * 文章类型id
+     */
+    @TableField(value = "article_type_id")
+    private String articleTypeId;
 
     /**
      * 文章标题
@@ -79,6 +86,7 @@ public class Article implements Serializable {
         Article other = (Article) that;
         return (this.getArticleId() == null ? other.getArticleId() == null : this.getArticleId().equals(other.getArticleId()))
             && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
+            && (this.getArticleTypeId() == null ? other.getArticleTypeId() == null : this.getArticleTypeId().equals(other.getArticleTypeId()))
             && (this.getArticleTitle() == null ? other.getArticleTitle() == null : this.getArticleTitle().equals(other.getArticleTitle()))
             && (this.getArticleAddTime() == null ? other.getArticleAddTime() == null : this.getArticleAddTime().equals(other.getArticleAddTime()))
             && (this.getArticleCentext() == null ? other.getArticleCentext() == null : this.getArticleCentext().equals(other.getArticleCentext()))
@@ -93,6 +101,7 @@ public class Article implements Serializable {
         int result = 1;
         result = prime * result + ((getArticleId() == null) ? 0 : getArticleId().hashCode());
         result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
+        result = prime * result + ((getArticleTypeId() == null) ? 0 : getArticleTypeId().hashCode());
         result = prime * result + ((getArticleTitle() == null) ? 0 : getArticleTitle().hashCode());
         result = prime * result + ((getArticleAddTime() == null) ? 0 : getArticleAddTime().hashCode());
         result = prime * result + ((getArticleCentext() == null) ? 0 : getArticleCentext().hashCode());
@@ -110,6 +119,7 @@ public class Article implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", articleId=").append(articleId);
         sb.append(", userId=").append(userId);
+        sb.append(", articleTypeId=").append(articleTypeId);
         sb.append(", articleTitle=").append(articleTitle);
         sb.append(", articleAddTime=").append(articleAddTime);
         sb.append(", articleCentext=").append(articleCentext);

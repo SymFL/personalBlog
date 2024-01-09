@@ -2,11 +2,12 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.personalblog.personalblog.mapper.ArticleMapper">
+<mapper namespace="com.csk2024.personalblog.mapper.ArticleMapper">
 
     <resultMap id="BaseResultMap" type="com.csk2024.personalblog.entity.Article">
             <id property="articleId" column="article_id" jdbcType="VARCHAR"/>
             <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+            <result property="articleTypeId" column="article_type_id" jdbcType="VARCHAR"/>
             <result property="articleTitle" column="article_title" jdbcType="VARCHAR"/>
             <result property="articleAddTime" column="article_add_time" jdbcType="TIMESTAMP"/>
             <result property="articleCentext" column="article_centext" jdbcType="VARCHAR"/>
@@ -16,8 +17,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        article_id,user_id,article_title,
-        article_add_time,article_centext,article_good_number,
-        article_look_number,article_collection_number
+        article_id,user_id,article_type_id,
+        article_title,article_add_time,article_centext,
+        article_good_number,article_look_number,article_collection_number
     </sql>
 </mapper>

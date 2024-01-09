@@ -32,6 +32,8 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">文章管理 <b class="caret"></b></a>
                         <ul class="dropdown-menu" role="menu">
+                            <li><a href="/csk2024/article/type/list">文章类型</a></li>
+                            <li><a href="/csk2024/article/tagList">文章标签</a></li>
                             <li><a href="/csk2024/article/list">文章列表</a></li>
                         </ul>
                     </li>

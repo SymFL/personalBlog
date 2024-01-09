@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 /**
 * @author 24387
 * @description 针对表【article(文章)】的数据库操作Service实现
-* @createDate 2024-01-04 20:16:22
+* @createDate 2024-01-09 04:00:48
 */
 @Service
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>

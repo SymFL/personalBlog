@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.csk2024.personalblog.mapper.ArticleTypeMapper">
+
+    <resultMap id="BaseResultMap" type="com.csk2024.personalblog.entity.ArticleType">
+            <id property="articleTypeId" column="article_type_id" jdbcType="VARCHAR"/>
+            <result property="articleTypeName" column="article_type_name" jdbcType="VARCHAR"/>
+            <result property="articleTypeSort" column="article_type_sort" jdbcType="INTEGER"/>
+            <result property="articleTypeAddTime" column="article_type_add_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        article_type_id,article_type_name,article_type_sort,
+        article_type_add_time
+    </sql>
+    
+    <select id="articleTypeList" resultType="com.csk2024.personalblog.vo.ArticleTypeVo">
+        SELECT at.article_type_id,
+               at.article_type_name,
+               at.article_type_add_time,
+               at.article_type_sort,
+               (SELECT COUNT(1) FROM article as a WHERE a.article_type_id = at.article_type_id) as articleCount
+        FROM article_type as at
+        ORDER BY article_type_sort
+    </select>
+</mapper>
