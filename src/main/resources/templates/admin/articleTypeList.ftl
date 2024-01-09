@@ -56,7 +56,7 @@
     </div>
 </#if>
 
-<#-- 修改/添加标签弹出框 -->
+<#-- 修改/添加类型弹出框 -->
 <div class="modal fade" id="articleTypeUpdateModal">
     <div class="modal-dialog">
         <form class="form-horizontal" action="/csk2024/user/update" method="post">

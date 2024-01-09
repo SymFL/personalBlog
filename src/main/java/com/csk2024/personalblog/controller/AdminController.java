@@ -12,15 +12,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.csk2024.personalblog.dto.article.ArticleTypeAddOrUpdateDto;
 import com.csk2024.personalblog.dto.user.UserDto;
 import com.csk2024.personalblog.dto.user.UserListPageDto;
-import com.csk2024.personalblog.entity.Article;
-import com.csk2024.personalblog.entity.ArticleType;
-import com.csk2024.personalblog.entity.User;
-import com.csk2024.personalblog.service.ArticleService;
-import com.csk2024.personalblog.service.ArticleTagService;
-import com.csk2024.personalblog.service.ArticleTypeService;
-import com.csk2024.personalblog.service.UserService;
+import com.csk2024.personalblog.entity.*;
+import com.csk2024.personalblog.service.*;
 import com.csk2024.personalblog.utils.CommonPage;
 import com.csk2024.personalblog.utils.CommonResult;
+import com.csk2024.personalblog.dto.article.ArticleTagAddOrUpdateDto;
 import com.csk2024.personalblog.vo.ArticleTypeVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -48,6 +44,8 @@ public class AdminController {
     private UserService userService;
     @Autowired
     private ArticleTypeService articleTypeService;
+    @Autowired
+    private ArticleTagListService articleTagListService;
 
     /**
      * 管理端基础数据页面
@@ -161,6 +159,9 @@ public class AdminController {
         return CommonResult.failed("删除失败！");
     }
 
+    /**
+     * 增加或修改文章类型
+     */
     @PostMapping("/article/type/addOrUpdate")
     @ResponseBody
     public CommonResult articleTypeAddOrUpdate(@Valid ArticleTypeAddOrUpdateDto articleTypeAddOrUpdateDto){
@@ -181,4 +182,54 @@ public class AdminController {
         }
         return CommonResult.failed("保存失败！");
     }
+
+    /**
+     * 文章标签列表
+     */
+    @GetMapping("/article/tag/list")
+    public String articleTagList(Model model){
+        LambdaQueryWrapper<ArticleTag> wrapper = new LambdaQueryWrapper<ArticleTag>().orderByDesc(ArticleTag::getArticleTagAddTime);
+        List<ArticleTag> articleTagList = articleTagService.list(wrapper);
+        model.addAttribute("articleTags",articleTagList);
+        return "/admin/articleTagList";
+    }
+
+    /**
+     * 增加或修改文章标签
+     */
+    @PostMapping("/article/tag/addOrUpdate")
+    @ResponseBody
+    public CommonResult articleTagAddOrUpdate(@Valid ArticleTagAddOrUpdateDto articleTagAddOrUpdateDto){
+        String articleTagId = articleTagAddOrUpdateDto.getArticleTagId();
+        ArticleTag articleTag = new ArticleTag();
+        BeanUtil.copyProperties(articleTagAddOrUpdateDto,articleTag);
+        if(StrUtil.isNotBlank(articleTagId)){
+            if(articleTagService.updateById(articleTag)){
+                return CommonResult.success("更新成功！");
+            }
+            return CommonResult.failed("更新失败！");
+        }
+        articleTag.setArticleTagAddTime(DateUtil.date());
+        if(articleTagService.save(articleTag)){
+            return CommonResult.success("添加成功");
+        }
+        return CommonResult.failed("添加失败");
+    }
+
+    /**
+     * 删除文章标签
+     */
+    @PostMapping("/article/tag/delete")
+    @ResponseBody
+    public CommonResult articleTageDelete(@NotBlank(message = "标签 id 不能为空") String articleTagId){
+        LambdaQueryWrapper<ArticleTagList> wrapper = new LambdaQueryWrapper<ArticleTagList>().eq(ArticleTagList::getArticleTagId, articleTagId);
+        if(articleTagListService.count(wrapper) > 0){
+            return CommonResult.failed("当前标签尚在使用中，请先取消文章与标签的关联");
+        }
+        if(articleTagService.removeById(articleTagId)){
+            return CommonResult.success("删除成功!");
+        }
+        return CommonResult.failed("删除失败！");
+    }
+
 }
