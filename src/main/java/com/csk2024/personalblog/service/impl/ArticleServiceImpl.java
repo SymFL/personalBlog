@@ -1,9 +1,12 @@
 package com.csk2024.personalblog.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.csk2024.personalblog.entity.Article;
 import com.csk2024.personalblog.service.ArticleService;
 import com.csk2024.personalblog.mapper.ArticleMapper;
+import com.csk2024.personalblog.vo.ArticleListVo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,6 +18,13 @@ import org.springframework.stereotype.Service;
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     implements ArticleService{
 
+    @Autowired
+    private ArticleMapper articleMapper;
+    @Override
+    public IPage<ArticleListVo> listArticleListVo(IPage<ArticleListVo> page, String articleTitle) {
+
+        return articleMapper.listArticleListVo(page,articleTitle);
+    }
 }
 
 

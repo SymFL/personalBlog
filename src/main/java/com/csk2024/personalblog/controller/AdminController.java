@@ -9,6 +9,8 @@ import cn.hutool.system.SystemUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.csk2024.personalblog.dto.article.ArticleListPageDto;
+import com.csk2024.personalblog.dto.article.ArticleTagAddOrUpdateDto;
 import com.csk2024.personalblog.dto.article.ArticleTypeAddOrUpdateDto;
 import com.csk2024.personalblog.dto.user.UserDto;
 import com.csk2024.personalblog.dto.user.UserListPageDto;
@@ -16,7 +18,7 @@ import com.csk2024.personalblog.entity.*;
 import com.csk2024.personalblog.service.*;
 import com.csk2024.personalblog.utils.CommonPage;
 import com.csk2024.personalblog.utils.CommonResult;
-import com.csk2024.personalblog.dto.article.ArticleTagAddOrUpdateDto;
+import com.csk2024.personalblog.vo.ArticleListVo;
 import com.csk2024.personalblog.vo.ArticleTypeVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -232,4 +234,30 @@ public class AdminController {
         return CommonResult.failed("删除失败！");
     }
 
+    /**
+     * 文章列表
+     */
+    @GetMapping("/article/list")
+    public String articleList(ArticleListPageDto articleListPageDto,Model model){
+        String articleTitle = articleListPageDto.getArticleTitle();
+        IPage<ArticleListVo> page = new Page<>(articleListPageDto.getPageNumber(),articleListPageDto.getPageSize());
+        IPage<ArticleListVo> articleListVoPage = articleService.listArticleListVo(page,articleTitle);
+        model.addAttribute("articlePage",CommonPage.restPage(articleListVoPage));
+        if(StrUtil.isNotBlank(articleTitle)){
+            model.addAttribute("articleTitle",articleTitle);
+        }
+        return "/admin/articleList";
+    }
+
+    /**
+     * 文章删除
+     */
+    @PostMapping("/article/delete")
+    @ResponseBody
+    public CommonResult articleDelete(@NotBlank(message = "文章 id 不允许为空") String articleId){
+        if(articleService.removeById(articleId)){
+            return CommonResult.success("删除成功！");
+        }
+        return CommonResult.failed("删除失败！");
+    }
 }

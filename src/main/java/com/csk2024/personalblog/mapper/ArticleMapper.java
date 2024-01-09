@@ -1,7 +1,10 @@
 package com.csk2024.personalblog.mapper;
 
-import com.csk2024.personalblog.entity.Article;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.csk2024.personalblog.entity.Article;
+import com.csk2024.personalblog.vo.ArticleListVo;
+import org.apache.ibatis.annotations.Param;
 
 /**
 * @author 24387
@@ -11,6 +14,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface ArticleMapper extends BaseMapper<Article> {
 
+    IPage<ArticleListVo> listArticleListVo(IPage<ArticleListVo> page, @Param("articleTitle") String articleTitle);
 }
 
 

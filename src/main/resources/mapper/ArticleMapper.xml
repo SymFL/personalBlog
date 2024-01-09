@@ -21,4 +21,25 @@
         article_title,article_add_time,article_centext,
         article_good_number,article_look_number,article_collection_number
     </sql>
+
+    <select id="listArticleListVo" resultType="com.csk2024.personalblog.vo.ArticleListVo">
+        SELECT art.article_id,
+               art.user_id,
+               u.user_name,
+               art.article_type_id,
+               artt.article_type_name,
+               art.article_title,
+               art.article_add_time,
+               art.article_good_number,
+               art.article_look_number,
+               art.article_collection_number
+        FROM article art
+                 LEFT JOIN article_type AS artt ON art.article_type_id = artt.article_type_id
+                 LEFT JOIN `user` AS u ON u.user_id = art.user_id
+        <where>
+            <if test="articleTitle != null and articleTitle != ''">
+                and art.article_title  like "%"#{articleTitle}"%"
+            </if>
+        </where>
+    </select>
 </mapper>

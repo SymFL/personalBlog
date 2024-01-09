@@ -71,7 +71,7 @@
             <ul class="pager" id="myPager" data-ride="pager"
                 data-page=${userPage.pageNumber} data-rec-per-page=${userPage.pageSize} data-rec-total=${userPage.total}
                 data-elements="prev_icon,nav,next_icon,page_of_total_text,total_text"
-                data-link-creator="/csk2024/user/list?pageNumber={page}<#if (userName?? && userName?length>0)>&userName=${userName!}</#if>"></ul>
+                data-link-creator="/csk2024/user/list?pageNumber={page}<#if (userName?? && userName?length>0)>&userName=${(userName)!}</#if>"></ul>
         </div>
     </div>
 <#else >
