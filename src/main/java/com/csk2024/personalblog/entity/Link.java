@@ -1,5 +1,6 @@
 package com.csk2024.personalblog.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -25,6 +26,12 @@ public class Link implements Serializable {
      */
     @TableField(value = "link_title")
     private String linkTitle;
+
+    /**
+     * 友情连接排序，数字小的在前面
+     */
+    @TableField(value = "link_sort")
+    private Integer linkSort;
 
     /**
      * 友情连接的地址
@@ -61,6 +68,7 @@ public class Link implements Serializable {
         Link other = (Link) that;
         return (this.getLinkId() == null ? other.getLinkId() == null : this.getLinkId().equals(other.getLinkId()))
             && (this.getLinkTitle() == null ? other.getLinkTitle() == null : this.getLinkTitle().equals(other.getLinkTitle()))
+            && (this.getLinkSort() == null ? other.getLinkSort() == null : this.getLinkSort().equals(other.getLinkSort()))
             && (this.getLinkUrl() == null ? other.getLinkUrl() == null : this.getLinkUrl().equals(other.getLinkUrl()))
             && (this.getLinkLogoUrl() == null ? other.getLinkLogoUrl() == null : this.getLinkLogoUrl().equals(other.getLinkLogoUrl()))
             && (this.getLinkAddTime() == null ? other.getLinkAddTime() == null : this.getLinkAddTime().equals(other.getLinkAddTime()));
@@ -72,6 +80,7 @@ public class Link implements Serializable {
         int result = 1;
         result = prime * result + ((getLinkId() == null) ? 0 : getLinkId().hashCode());
         result = prime * result + ((getLinkTitle() == null) ? 0 : getLinkTitle().hashCode());
+        result = prime * result + ((getLinkSort() == null) ? 0 : getLinkSort().hashCode());
         result = prime * result + ((getLinkUrl() == null) ? 0 : getLinkUrl().hashCode());
         result = prime * result + ((getLinkLogoUrl() == null) ? 0 : getLinkLogoUrl().hashCode());
         result = prime * result + ((getLinkAddTime() == null) ? 0 : getLinkAddTime().hashCode());
@@ -86,6 +95,7 @@ public class Link implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", linkId=").append(linkId);
         sb.append(", linkTitle=").append(linkTitle);
+        sb.append(", linkSort=").append(linkSort);
         sb.append(", linkUrl=").append(linkUrl);
         sb.append(", linkLogoUrl=").append(linkLogoUrl);
         sb.append(", linkAddTime=").append(linkAddTime);

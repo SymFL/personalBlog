@@ -37,7 +37,7 @@
                             <li><a href="/csk2024/article/list">文章列表</a></li>
                         </ul>
                     </li>
-                    <li><a href="/csk2024/link"><i class="icon icon-link"></i> 友情链接</a></li>
+                    <li><a href="/csk2024/link/list"><i class="icon icon-link"></i> 友情链接</a></li>
                     <li><a href="/csk2024/ad"><i class="icon icon-dollar"></i> 广告管理</a></li>
                 </ul>
             </div><!-- END .navbar-collapse -->

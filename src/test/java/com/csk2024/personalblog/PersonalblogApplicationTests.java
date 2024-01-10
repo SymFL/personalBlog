@@ -4,11 +4,9 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.csk2024.personalblog.entity.Article;
 import com.csk2024.personalblog.entity.ArticleType;
+import com.csk2024.personalblog.entity.Link;
 import com.csk2024.personalblog.entity.User;
-import com.csk2024.personalblog.service.ArticleService;
-import com.csk2024.personalblog.service.ArticleTagService;
-import com.csk2024.personalblog.service.ArticleTypeService;
-import com.csk2024.personalblog.service.UserService;
+import com.csk2024.personalblog.service.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,6 +26,8 @@ class PersonalblogApplicationTests {
     private ArticleService articleService;
     @Autowired
     private ArticleTagService articleTagService;
+    @Autowired
+    private LinkService linkService;
 
     @Test
     void users() {
@@ -104,6 +104,21 @@ class PersonalblogApplicationTests {
         }
         articleService.saveBatch(articles,50);
 
+    }
+
+    @Test
+    void addLink(){
+        List<Link> links = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Link link = new Link();
+            link.setLinkTitle("百度" + i);
+            link.setLinkSort(10);
+            link.setLinkUrl("www.baidu.com");
+            link.setLinkLogoUrl("https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png");
+            link.setLinkAddTime(DateUtil.date());
+            links.add(link);
+        }
+        linkService.saveBatch(links,10);
     }
 
 }

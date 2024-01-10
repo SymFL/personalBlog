@@ -8,10 +8,12 @@ import cn.hutool.system.OsInfo;
 import cn.hutool.system.SystemUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.csk2024.personalblog.dto.article.ArticleListPageDto;
 import com.csk2024.personalblog.dto.article.ArticleTagAddOrUpdateDto;
 import com.csk2024.personalblog.dto.article.ArticleTypeAddOrUpdateDto;
+import com.csk2024.personalblog.dto.link.LinkUpdateDto;
 import com.csk2024.personalblog.dto.user.UserDto;
 import com.csk2024.personalblog.dto.user.UserListPageDto;
 import com.csk2024.personalblog.entity.*;
@@ -48,6 +50,8 @@ public class AdminController {
     private ArticleTypeService articleTypeService;
     @Autowired
     private ArticleTagListService articleTagListService;
+    @Autowired
+    private LinkService linkService;
 
     /**
      * 管理端基础数据页面
@@ -256,6 +260,50 @@ public class AdminController {
     @ResponseBody
     public CommonResult articleDelete(@NotBlank(message = "文章 id 不允许为空") String articleId){
         if(articleService.removeById(articleId)){
+            return CommonResult.success("删除成功！");
+        }
+        return CommonResult.failed("删除失败！");
+    }
+
+    /**
+     * 友链列表
+     */
+    @GetMapping("/link/list")
+    public String linkList(Model model){
+        List<Link> links = linkService.list(Wrappers.<Link>lambdaQuery().orderByAsc(Link::getLinkSort));
+        model.addAttribute("links",links);
+        return "/admin/linkList";
+    }
+
+    /**
+     * 友链增加或修改
+     */
+    @PostMapping("/link/addOrUpdate")
+    @ResponseBody
+    public CommonResult linkAddOrUpdate(@Valid LinkUpdateDto linkUpdateDto){
+        String LinkId = linkUpdateDto.getLinkId();
+        Link link = new Link();
+        BeanUtil.copyProperties(linkUpdateDto,link);
+        if(StrUtil.isNotBlank(LinkId)){
+            if(linkService.updateById(link)){
+                return CommonResult.success("更新成功！");
+            }
+            return CommonResult.failed("更新失败！");
+        }
+        link.setLinkAddTime(DateUtil.date());
+        if(linkService.save(link)){
+            return CommonResult.success("更新成功！");
+        }
+        return CommonResult.failed("更新失败！");
+    }
+
+    /**
+     * 友链删除
+     */
+    @PostMapping("/link/delete")
+    @ResponseBody
+    public CommonResult linkDelete(@NotBlank(message = "友链 ID 不能为空") String linkId){
+        if(linkService.removeById(linkId)){
             return CommonResult.success("删除成功！");
         }
         return CommonResult.failed("删除失败！");

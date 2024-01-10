@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 /**
 * @author 24387
 * @description 针对表【link(友情连接)】的数据库操作Service实现
-* @createDate 2024-01-04 20:17:30
+* @createDate 2024-01-10 23:51:15
 */
 @Service
 public class LinkServiceImpl extends ServiceImpl<LinkMapper, Link>
