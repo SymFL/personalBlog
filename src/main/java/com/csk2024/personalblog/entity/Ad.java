@@ -1,5 +1,6 @@
 package com.csk2024.personalblog.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -33,10 +34,16 @@ public class Ad implements Serializable {
     private String adTitle;
 
     /**
+     * 广告图片的url地址
+     */
+    @TableField(value = "ad_img_url")
+    private String adImgUrl;
+
+    /**
      * 广告的url地址
      */
-    @TableField(value = "ad_url")
-    private String adUrl;
+    @TableField(value = "ad_link_url")
+    private String adLinkUrl;
 
     /**
      * 广告排序，数值的小排在前面
@@ -80,7 +87,8 @@ public class Ad implements Serializable {
         return (this.getAdId() == null ? other.getAdId() == null : this.getAdId().equals(other.getAdId()))
             && (this.getAdTypeId() == null ? other.getAdTypeId() == null : this.getAdTypeId().equals(other.getAdTypeId()))
             && (this.getAdTitle() == null ? other.getAdTitle() == null : this.getAdTitle().equals(other.getAdTitle()))
-            && (this.getAdUrl() == null ? other.getAdUrl() == null : this.getAdUrl().equals(other.getAdUrl()))
+            && (this.getAdImgUrl() == null ? other.getAdImgUrl() == null : this.getAdImgUrl().equals(other.getAdImgUrl()))
+            && (this.getAdLinkUrl() == null ? other.getAdLinkUrl() == null : this.getAdLinkUrl().equals(other.getAdLinkUrl()))
             && (this.getAdSort() == null ? other.getAdSort() == null : this.getAdSort().equals(other.getAdSort()))
             && (this.getAdBeginTime() == null ? other.getAdBeginTime() == null : this.getAdBeginTime().equals(other.getAdBeginTime()))
             && (this.getAdEndTime() == null ? other.getAdEndTime() == null : this.getAdEndTime().equals(other.getAdEndTime()))
@@ -94,7 +102,8 @@ public class Ad implements Serializable {
         result = prime * result + ((getAdId() == null) ? 0 : getAdId().hashCode());
         result = prime * result + ((getAdTypeId() == null) ? 0 : getAdTypeId().hashCode());
         result = prime * result + ((getAdTitle() == null) ? 0 : getAdTitle().hashCode());
-        result = prime * result + ((getAdUrl() == null) ? 0 : getAdUrl().hashCode());
+        result = prime * result + ((getAdImgUrl() == null) ? 0 : getAdImgUrl().hashCode());
+        result = prime * result + ((getAdLinkUrl() == null) ? 0 : getAdLinkUrl().hashCode());
         result = prime * result + ((getAdSort() == null) ? 0 : getAdSort().hashCode());
         result = prime * result + ((getAdBeginTime() == null) ? 0 : getAdBeginTime().hashCode());
         result = prime * result + ((getAdEndTime() == null) ? 0 : getAdEndTime().hashCode());
@@ -111,7 +120,8 @@ public class Ad implements Serializable {
         sb.append(", adId=").append(adId);
         sb.append(", adTypeId=").append(adTypeId);
         sb.append(", adTitle=").append(adTitle);
-        sb.append(", adUrl=").append(adUrl);
+        sb.append(", adImgUrl=").append(adImgUrl);
+        sb.append(", adLinkUrl=").append(adLinkUrl);
         sb.append(", adSort=").append(adSort);
         sb.append(", adBeginTime=").append(adBeginTime);
         sb.append(", adEndTime=").append(adEndTime);

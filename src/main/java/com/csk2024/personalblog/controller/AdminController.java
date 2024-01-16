@@ -10,6 +10,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.csk2024.personalblog.dto.ad.AdTypeUpdateDto;
+import com.csk2024.personalblog.dto.ad.AdUpdateDto;
 import com.csk2024.personalblog.dto.article.ArticleListPageDto;
 import com.csk2024.personalblog.dto.article.ArticleTagAddOrUpdateDto;
 import com.csk2024.personalblog.dto.article.ArticleTypeAddOrUpdateDto;
@@ -20,6 +22,7 @@ import com.csk2024.personalblog.entity.*;
 import com.csk2024.personalblog.service.*;
 import com.csk2024.personalblog.utils.CommonPage;
 import com.csk2024.personalblog.utils.CommonResult;
+import com.csk2024.personalblog.vo.AdListVo;
 import com.csk2024.personalblog.vo.ArticleListVo;
 import com.csk2024.personalblog.vo.ArticleTypeVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,6 +56,10 @@ public class AdminController {
     private ArticleTagListService articleTagListService;
     @Autowired
     private LinkService linkService;
+    @Autowired
+    private AdService adService;
+    @Autowired
+    private AdTypeService adTypeService;
 
     /**
      * 管理端基础数据页面
@@ -307,5 +315,93 @@ public class AdminController {
             return CommonResult.success("删除成功！");
         }
         return CommonResult.failed("删除失败！");
+    }
+
+    /**
+     * 广告列表
+     */
+    @GetMapping("/ad/list")
+    public String adList(String adTypeId, Model model){
+        List<AdType> adTypes = adTypeService.list(Wrappers.<AdType>lambdaQuery().orderByAsc(AdType::getAdTypeSort));
+        model.addAttribute("adTypes",adTypes);
+
+        List<AdListVo> ads = adService.adList(adTypeId);
+        model.addAttribute("ads",ads);
+
+        return "/admin/adList";
+    }
+
+    /**
+     * 广告类型添加或修改
+     */
+    @PostMapping("/ad/type/addOrUpdate")
+    @ResponseBody
+    public CommonResult adTypeAddOrUpdate(@Valid AdTypeUpdateDto adTypeUpdateDto){
+        String adTypeId = adTypeUpdateDto.getAdTypeId();
+        AdType adType = new AdType();
+        BeanUtil.copyProperties(adTypeUpdateDto,adType);
+
+        if(StrUtil.isNotBlank(adTypeId)){
+            if(adTypeService.updateById(adType)){
+                return CommonResult.success("更新成功！");
+            }
+            return CommonResult.failed("更新失败！");
+        }
+        adType.setAdTypeAddTime(DateUtil.date());
+        if(adTypeService.save(adType)){
+            return CommonResult.success("保存成功！");
+        }
+        return CommonResult.failed("保存失败！");
+    }
+
+    /**
+     * 广告类型删除
+     */
+    @PostMapping("/ad/type/delete")
+    @ResponseBody
+    public CommonResult adTypeDelete(@NotBlank(message = "类型 Id 不允许为空") String adTypeId){
+        if(adTypeService.removeById(adTypeId)){
+            return CommonResult.success("删除成功！");
+        }
+        return CommonResult.failed("删除失败！");
+    }
+
+    /**
+     * 广告删除
+     */
+    @PostMapping("/ad/delete")
+    @ResponseBody
+    public CommonResult adDelete(@NotBlank(message = "广告 Id 不允许为空") String adId){
+        if(adService.removeById(adId)){
+            return CommonResult.success("删除成功！");
+        }
+        return CommonResult.failed("删除失败！");
+    }
+
+    /**
+     * 广告添加/修改
+     */
+    @PostMapping("/ad/addOrUpdate")
+    @ResponseBody
+    public CommonResult adAddOrUpdate(@Valid AdUpdateDto adUpdateDto){
+        String adId = adUpdateDto.getAdId();
+        Date adBeginTime = DateUtil.parse(adUpdateDto.getAdBeginTime());
+        Date adEndTime = DateUtil.parse(adUpdateDto.getAdEndTime());
+        Ad ad = new Ad();
+        BeanUtil.copyProperties(adUpdateDto,ad);
+        ad.setAdBeginTime(adBeginTime);
+        ad.setAdEndTime(adEndTime);
+
+        if(StrUtil.isNotBlank(adId)){
+            if(adService.updateById(ad)){
+                return CommonResult.success("更新成功！");
+            }
+            return CommonResult.failed("更新失败！");
+        }
+        ad.setAdAddTime(DateUtil.date());
+        if(adService.save(ad)){
+            return CommonResult.success("保存成功！");
+        }
+        return CommonResult.failed("保存失败！");
     }
 }

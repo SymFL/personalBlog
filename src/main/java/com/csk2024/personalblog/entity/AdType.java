@@ -1,5 +1,6 @@
 package com.csk2024.personalblog.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -27,7 +28,7 @@ public class AdType implements Serializable {
     private String adTypeTitle;
 
     /**
-     * 广告表示（首页顶部广告、轮播图广告、文章详情广告）
+     * 广告标识（首页顶部广告、轮播图广告、文章详情广告）
      */
     @TableField(value = "ad_type_tag")
     private String adTypeTag;

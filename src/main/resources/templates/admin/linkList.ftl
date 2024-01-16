@@ -1,16 +1,6 @@
 <#-- 友链列表页面 -->
 <#include "../import/adminTop.ftl">
-
-<style>
-    .link_img {
-        width: 85px;
-    }
-</style>
-
-
-
 <#--  列表面板  -->
-
 <div class="panel">
     <div class="panel-heading">
         <button type="button"
@@ -37,7 +27,7 @@
                     <td>${(link.linkSort)!}</td>
                     <td>${(link.linkTitle)!}</td>
                     <td>
-                        <img class="link_img img-thumbnail" src="${link.linkLogoUrl}" alt="友链Logo"/>
+                        <img class="thumbnail img-thumbnail" src="${link.linkLogoUrl}" alt="友链Logo"/>
                     </td>
                     <td>${(link.linkAddTime)?string("yyyy-MM-dd HH:mm:ss")}</td>
                     <td>

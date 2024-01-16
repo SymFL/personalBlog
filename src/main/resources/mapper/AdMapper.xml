@@ -2,13 +2,14 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.personalblog.personalblog.mapper.AdMapper">
+<mapper namespace="com.csk2024.personalblog.mapper.AdMapper">
 
     <resultMap id="BaseResultMap" type="com.csk2024.personalblog.entity.Ad">
             <id property="adId" column="ad_id" jdbcType="VARCHAR"/>
             <result property="adTypeId" column="ad_type_id" jdbcType="VARCHAR"/>
             <result property="adTitle" column="ad_title" jdbcType="VARCHAR"/>
-            <result property="adUrl" column="ad_url" jdbcType="VARCHAR"/>
+            <result property="adImgUrl" column="ad_img_url" jdbcType="VARCHAR"/>
+            <result property="adLinkUrl" column="ad_link_url" jdbcType="VARCHAR"/>
             <result property="adSort" column="ad_sort" jdbcType="INTEGER"/>
             <result property="adBeginTime" column="ad_begin_time" jdbcType="TIMESTAMP"/>
             <result property="adEndTime" column="ad_end_time" jdbcType="TIMESTAMP"/>
@@ -17,7 +18,27 @@
 
     <sql id="Base_Column_List">
         ad_id,ad_type_id,ad_title,
-        ad_url,ad_sort,ad_begin_time,
-        ad_end_time,ad_add_time
+        ad_img_url,ad_link_url,ad_sort,
+        ad_begin_time,ad_end_time,ad_add_time
     </sql>
+
+    <select id="adList" resultType="com.csk2024.personalblog.vo.AdListVo">
+        select
+            ad.ad_id,
+            ad.ad_begin_time,
+            ad.ad_end_time,
+            ad.ad_type_id,
+            adt.ad_type_title,
+            ad.ad_img_url,
+            ad.ad_link_url,
+            ad.ad_sort,
+            ad.ad_title
+        from ad left join ad_type adt on ad.ad_type_id = adt.ad_type_id
+        <where>
+            <if test="adTypeId != null and adTypeId != ''">
+                and adt.ad_type_id = #{adTypeId}
+            </if>
+        </where>
+        order by ad.ad_sort;
+    </select>
 </mapper>

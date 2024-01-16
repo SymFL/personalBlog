@@ -2,10 +2,7 @@ package com.csk2024.personalblog;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.crypto.SecureUtil;
-import com.csk2024.personalblog.entity.Article;
-import com.csk2024.personalblog.entity.ArticleType;
-import com.csk2024.personalblog.entity.Link;
-import com.csk2024.personalblog.entity.User;
+import com.csk2024.personalblog.entity.*;
 import com.csk2024.personalblog.service.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +22,11 @@ class PersonalblogApplicationTests {
     @Autowired
     private ArticleService articleService;
     @Autowired
-    private ArticleTagService articleTagService;
-    @Autowired
     private LinkService linkService;
+    @Autowired
+    private AdTypeService adTypeService;
+    @Autowired
+    private AdService adService;
 
     @Test
     void users() {
@@ -119,6 +118,45 @@ class PersonalblogApplicationTests {
             links.add(link);
         }
         linkService.saveBatch(links,10);
+    }
+
+    @Test
+    void addAdType(){
+        List<AdType> adTypes = new ArrayList<>();
+
+        AdType adType1 = new AdType();
+        adType1.setAdTypeTitle("首页轮播图广告");
+        adType1.setAdTypeTag("HeadAd");
+        adType1.setAdTypeSort(1);
+        adType1.setAdTypeAddTime(DateUtil.date());
+        adTypes.add(adType1);
+
+        AdType adType2 = new AdType();
+        adType2.setAdTypeTitle("文章页面广告");
+        adType2.setAdTypeTag("ArticleAd");
+        adType2.setAdTypeSort(2);
+        adType2.setAdTypeAddTime(DateUtil.date());
+        adTypes.add(adType2);
+
+        adTypeService.saveBatch(adTypes,2);
+    }
+
+    @Test
+    void addAd(){
+        ArrayList<Ad> ads = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            Ad ad = new Ad();
+            ad.setAdTypeId("");
+            ad.setAdTitle("广告" + i);
+            ad.setAdImgUrl("https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png");
+            ad.setAdLinkUrl("https://www.baidu.com/");
+            ad.setAdSort(10);
+            ad.setAdBeginTime(DateUtil.date());
+            ad.setAdEndTime(DateUtil.date());
+            ad.setAdAddTime(DateUtil.date());
+            ads.add(ad);
+        }
+        adService.saveBatch(ads,4);
     }
 
 }
