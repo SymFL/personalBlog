@@ -40,6 +40,17 @@
                     <li><a href="/csk2024/link/list"><i class="icon icon-link"></i> 友情链接</a></li>
                     <li><a href="/csk2024/ad/list"><i class="icon icon-dollar"></i> 广告管理</a></li>
                 </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-th-list"></i> 系统<b
+                                    class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+<#--                            <li><a href="javascript:void(0)" data-toggle="modal" data-target="#updatePasswordModal"> <i class="icon-edit"></i> 修改密码</a></li>-->
+                            <li><a href="/csk2024/logout"><i class="icon-signout"></i> 退出登陆</a></li>
+                        </ul>
+                    </li>
+
+                </ul>
             </div><!-- END .navbar-collapse -->
         </div>
     </nav>

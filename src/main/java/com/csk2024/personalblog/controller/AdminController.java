@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
@@ -60,6 +62,51 @@ public class AdminController {
     private AdService adService;
     @Autowired
     private AdTypeService adTypeService;
+    @Autowired
+    private AdminService adminService;
+
+    /**
+     * 管理员登录页面
+     */
+    @GetMapping("/login")
+    public String Login(){
+        return "/admin/adminLogin";
+    }
+
+    /**
+     * 管理员登出
+     */
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        request.getSession().removeAttribute("admin");
+        return "redirect:/csk2024/login";
+    }
+
+    /**
+     * 管理员登录提交
+     */
+    @PostMapping("/adminLogin")
+    @ResponseBody
+    public CommonResult adminLogin(HttpServletRequest request,
+                                   String adminName,
+                                   String adminPassword,
+                                   String verifyCode) {
+        HttpSession session = request.getSession();
+        if (StrUtil.isBlank(verifyCode) || !verifyCode.equals(session.getAttribute("circleCaptchaCode"))) {
+            session.removeAttribute("circleCaptchaCode");
+            return CommonResult.failed("验证码不正确");
+        }
+        Admin admin = adminService.getOne(Wrappers.<Admin>lambdaQuery()
+                .eq(Admin::getAdminName, adminName)
+                .eq(Admin::getAdminPassword, adminPassword), false);
+        if (Objects.isNull(admin)) {
+            session.removeAttribute("circleCaptchaCode");
+            return CommonResult.failed("用户名或者密码不正确");
+        }
+        session.setAttribute("admin", admin);
+        return CommonResult.success("登录成功");
+    }
+
 
     /**
      * 管理端基础数据页面
