@@ -71,7 +71,7 @@ class PersonalblogApplicationTests {
             article.setArticleTypeId(types.get(0).getArticleTypeId());
             article.setArticleTitle("测试文章" + i);
             article.setArticleAddTime(DateUtil.date());
-            article.setArticleCentext("这是文章正文");
+            article.setArticleContext("这是文章正文");
             article.setArticleGoodNumber(0);
             article.setArticleLookNumber(0);
             article.setArticleCollectionNumber(0);
@@ -83,7 +83,7 @@ class PersonalblogApplicationTests {
             article.setArticleTypeId(types.get(1).getArticleTypeId());
             article.setArticleTitle("测试文章" + i);
             article.setArticleAddTime(DateUtil.date());
-            article.setArticleCentext("这是文章正文");
+            article.setArticleContext("这是文章正文");
             article.setArticleGoodNumber(0);
             article.setArticleLookNumber(0);
             article.setArticleCollectionNumber(0);
@@ -95,7 +95,7 @@ class PersonalblogApplicationTests {
             article.setArticleTypeId(types.get(2).getArticleTypeId());
             article.setArticleTitle("测试文章" + i);
             article.setArticleAddTime(DateUtil.date());
-            article.setArticleCentext("这是文章正文");
+            article.setArticleContext("这是文章正文");
             article.setArticleGoodNumber(0);
             article.setArticleLookNumber(0);
             article.setArticleCollectionNumber(0);

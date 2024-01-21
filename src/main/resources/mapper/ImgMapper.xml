@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.csk2024.personalblog.mapper.ImgMapper">
+
+    <resultMap id="BaseResultMap" type="com.csk2024.personalblog.entity.Img">
+            <id property="imgId" column="img_id" jdbcType="VARCHAR"/>
+            <result property="imgSize" column="img_size" jdbcType="BIGINT"/>
+            <result property="imgUrl" column="img_url" jdbcType="VARCHAR"/>
+            <result property="imgAddTime" column="img_add_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        img_id,img_size,img_url,
+        img_add_time
+    </sql>
+</mapper>

@@ -1,8 +1,8 @@
 package com.csk2024.personalblog.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.csk2024.personalblog.entity.Article;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.csk2024.personalblog.entity.Article;
 import com.csk2024.personalblog.vo.ArticleListVo;
 
 /**
@@ -13,4 +13,10 @@ import com.csk2024.personalblog.vo.ArticleListVo;
 public interface ArticleService extends IService<Article> {
 
     IPage<ArticleListVo> listArticleListVo(IPage<ArticleListVo> page, String articleTitle);
+
+    IPage<ArticleListVo> listArticle(IPage<ArticleListVo> page, String articleTitle, String articleType);
+
+    IPage<ArticleListVo> listCollectionArticle(IPage<Article> page, String userId, String articleTitle);
+
+    IPage<ArticleListVo> listUserArticle(IPage<Article> page, String userId, String articleTitle);
 }

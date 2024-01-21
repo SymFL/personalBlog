@@ -23,6 +23,11 @@ public class CommonResult<T> {
         this.data = data;
     }
 
+    protected CommonResult(long code,T data) {
+        this.code = code;
+        this.data = data;
+    }
+
     public CommonResult(long code, String message) {
         this.code = code;
         this.message = message;
@@ -53,6 +58,10 @@ public class CommonResult<T> {
      */
     public static <T> CommonResult<T> success(T data, String message) {
         return new CommonResult<T>(200, message, data);
+    }
+
+    public static <T> CommonResult<T> success(long code , T data) {
+        return new CommonResult<T>(code, data);
     }
 
     /**

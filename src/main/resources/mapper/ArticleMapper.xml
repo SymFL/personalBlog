@@ -42,4 +42,60 @@
             </if>
         </where>
     </select>
+
+    <select id="listArticle" resultType="com.csk2024.personalblog.vo.ArticleListVo">
+        SELECT art.article_id,
+        art.user_id,
+        u.user_name,
+        art.article_type_id,
+        artt.article_type_name,
+        art.article_title,
+        art.article_add_time,
+        art.article_good_number,
+        art.article_look_number,
+        art.article_collection_number
+        FROM article art
+        LEFT JOIN article_type AS artt ON art.article_type_id = artt.article_type_id
+        LEFT JOIN `user` AS u ON u.user_id = art.user_id
+        <where>
+            <if test="articleTitle != null and articleTitle != ''">
+                and art.article_title  like "%"#{articleTitle}"%"
+            </if>
+            <if test="articleType != null and articleType != ''">
+                and artt.article_type_name  like "%"#{articleType}"%"
+            </if>
+        </where>
+    </select>
+
+    <select id="listCollectionArticle" resultType="com.csk2024.personalblog.vo.ArticleListVo">
+        SELECT art.article_id,
+        artt.article_type_name,
+        art.article_title,
+        art.article_look_number
+        FROM article art
+        INNER JOIN user_collection_article AS uca ON art.article_id = uca.article_id and uca.user_id = #{userId}
+        LEFT JOIN article_type AS artt ON art.article_type_id = artt.article_type_id
+        <where>
+            <if test="articleTitle != null and articleTitle != ''">
+                and art.article_title like "%"#{articleTitle}"%"
+            </if>
+        </where>
+    </select>
+
+    <select id="listUserArticle" resultType="com.csk2024.personalblog.vo.ArticleListVo">
+        SELECT art.article_id,
+        artt.article_type_name,
+        art.article_title,
+        art.article_good_number,
+        art.article_look_number,
+        art.article_collection_number
+        FROM article art
+        LEFT JOIN article_type AS artt ON art.article_type_id = artt.article_type_id
+        <where>
+            and art.user_id = #{userId}
+            <if test="articleTitle != null and articleTitle != ''">
+                and art.article_title like "%"#{articleTitle}"%"
+            </if>
+        </where>
+    </select>
 </mapper>

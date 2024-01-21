@@ -102,19 +102,11 @@
                 },
                 function (date) {
                     if (date.code === 200) {
-                        console.log(number);
-                        console.log(size);
                         alert(date.message);
-                        console.log(number);
-                        console.log(size);
                         if (number === 1 && size === 1) {
-                            console.log(number);
-                            console.log(size);
                             window.location.href = "/csk2024/article/list";
                             return;
                         } else if (number > 1 && size === 1) {
-                            console.log(number);
-                            console.log(size);
                             var url = new URL(window.location.href);
                             var params = url.searchParams;
                             params.set('pageNumber', (number - 1).toString());

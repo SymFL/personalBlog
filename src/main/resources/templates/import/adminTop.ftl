@@ -15,7 +15,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <!-- 品牌名称或logo -->
-                <a class="navbar-brand" href="/">首页</a>
+                <a class="navbar-brand" href="/index">首页</a>
             </div>
             <!-- 导航项目 -->
             <div class="collapse navbar-collapse navbar-collapse-example">

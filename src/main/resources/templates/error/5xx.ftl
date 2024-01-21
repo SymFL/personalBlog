@@ -1,5 +1,5 @@
 <#-- 500 错误页面 -->
-<#include "../import/view.ftl">
+<#include "../import/viewTop.ftl">
 
 <div class="panel">
     <div class="panel-body" style="text-align: center;">
