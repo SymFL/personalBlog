@@ -18,9 +18,11 @@ public interface ArticleMapper extends BaseMapper<Article> {
 
     IPage<ArticleListVo> listArticle(IPage<ArticleListVo> page, @Param("articleTitle") String articleTitle, @Param("articleType") String articleType);
 
-    IPage<ArticleListVo> listCollectionArticle(IPage<Article> page, @Param("userId") String userId, @Param("articleTitle") String articleTitle);
+    IPage<ArticleListVo> listCollectionArticle(IPage<ArticleListVo> page, @Param("userId") String userId, @Param("articleTitle") String articleTitle);
 
-    IPage<ArticleListVo> listUserArticle(IPage<Article> page, @Param("userId") String userId, @Param("articleTitle") String articleTitle);
+    IPage<ArticleListVo> listUserArticle(IPage<ArticleListVo> page, @Param("userId") String userId, @Param("articleTitle") String articleTitle);
+
+    ArticleListVo getArticleDetails(@Param("articleId") String articleId);
 }
 
 

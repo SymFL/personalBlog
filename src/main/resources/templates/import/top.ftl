@@ -11,8 +11,11 @@
     <link rel="stylesheet" href="//cdn.bootcdn.net/ajax/libs/zui/1.10.0/css/zui.min.css">
     <link rel="stylesheet" type="text/css" href="/css/common.css">
     <link rel="stylesheet" type="text/css" href="/css/zui-red.css">
+    <link rel="stylesheet" type="text/css" href="/css/articleText.css">
     <script src="//cdn.bootcdn.net/ajax/libs/zui/1.10.0/lib/jquery/jquery.js"></script>
     <script src="//cdn.bootcdn.net/ajax/libs/zui/1.10.0/js/zui.min.js"></script>
     <script src="/js/common.js"></script>
+    <link href="https://unpkg.com/prismjs@latest/themes/prism.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.7.6/base64.min.js"></script>
 </head>
 <body>

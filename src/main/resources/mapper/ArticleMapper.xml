@@ -5,15 +5,15 @@
 <mapper namespace="com.csk2024.personalblog.mapper.ArticleMapper">
 
     <resultMap id="BaseResultMap" type="com.csk2024.personalblog.entity.Article">
-            <id property="articleId" column="article_id" jdbcType="VARCHAR"/>
-            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
-            <result property="articleTypeId" column="article_type_id" jdbcType="VARCHAR"/>
-            <result property="articleTitle" column="article_title" jdbcType="VARCHAR"/>
-            <result property="articleAddTime" column="article_add_time" jdbcType="TIMESTAMP"/>
-            <result property="articleCentext" column="article_centext" jdbcType="VARCHAR"/>
-            <result property="articleGoodNumber" column="article_good_number" jdbcType="INTEGER"/>
-            <result property="articleLookNumber" column="article_look_number" jdbcType="INTEGER"/>
-            <result property="articleCollectionNumber" column="article_collection_number" jdbcType="INTEGER"/>
+        <id property="articleId" column="article_id" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+        <result property="articleTypeId" column="article_type_id" jdbcType="VARCHAR"/>
+        <result property="articleTitle" column="article_title" jdbcType="VARCHAR"/>
+        <result property="articleAddTime" column="article_add_time" jdbcType="TIMESTAMP"/>
+        <result property="articleContext" column="article_centext" jdbcType="VARCHAR"/>
+        <result property="articleGoodNumber" column="article_good_number" jdbcType="INTEGER"/>
+        <result property="articleLookNumber" column="article_look_number" jdbcType="INTEGER"/>
+        <result property="articleCollectionNumber" column="article_collection_number" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -24,23 +24,24 @@
 
     <select id="listArticleListVo" resultType="com.csk2024.personalblog.vo.ArticleListVo">
         SELECT art.article_id,
-               art.user_id,
-               u.user_name,
-               art.article_type_id,
-               artt.article_type_name,
-               art.article_title,
-               art.article_add_time,
-               art.article_good_number,
-               art.article_look_number,
-               art.article_collection_number
+        art.user_id,
+        u.user_name,
+        art.article_type_id,
+        artt.article_type_name,
+        art.article_title,
+        art.article_add_time,
+        art.article_good_number,
+        art.article_look_number,
+        art.article_collection_number
         FROM article art
-                 LEFT JOIN article_type AS artt ON art.article_type_id = artt.article_type_id
-                 LEFT JOIN `user` AS u ON u.user_id = art.user_id
+        LEFT JOIN article_type AS artt ON art.article_type_id = artt.article_type_id
+        LEFT JOIN `user` AS u ON u.user_id = art.user_id
         <where>
             <if test="articleTitle != null and articleTitle != ''">
-                and art.article_title  like "%"#{articleTitle}"%"
+                and art.article_title like "%"#{articleTitle}"%"
             </if>
         </where>
+        ORDER BY art.article_add_time DESC
     </select>
 
     <select id="listArticle" resultType="com.csk2024.personalblog.vo.ArticleListVo">
@@ -59,12 +60,13 @@
         LEFT JOIN `user` AS u ON u.user_id = art.user_id
         <where>
             <if test="articleTitle != null and articleTitle != ''">
-                and art.article_title  like "%"#{articleTitle}"%"
+                and art.article_title like "%"#{articleTitle}"%"
             </if>
             <if test="articleType != null and articleType != ''">
-                and artt.article_type_name  like "%"#{articleType}"%"
+                and artt.article_type_name like "%"#{articleType}"%"
             </if>
         </where>
+        ORDER BY art.article_add_time DESC
     </select>
 
     <select id="listCollectionArticle" resultType="com.csk2024.personalblog.vo.ArticleListVo">
@@ -73,19 +75,22 @@
         art.article_title,
         art.article_look_number
         FROM article art
-        INNER JOIN user_collection_article AS uca ON art.article_id = uca.article_id and uca.user_id = #{userId}
+        INNER JOIN user_collection_article AS uca ON art.article_id = uca.article_id
         LEFT JOIN article_type AS artt ON art.article_type_id = artt.article_type_id
         <where>
+            and uca.user_id = #{userId}
             <if test="articleTitle != null and articleTitle != ''">
                 and art.article_title like "%"#{articleTitle}"%"
             </if>
         </where>
+        ORDER BY art.article_add_time DESC
     </select>
 
     <select id="listUserArticle" resultType="com.csk2024.personalblog.vo.ArticleListVo">
         SELECT art.article_id,
         artt.article_type_name,
         art.article_title,
+        art.article_add_time,
         art.article_good_number,
         art.article_look_number,
         art.article_collection_number
@@ -97,5 +102,24 @@
                 and art.article_title like "%"#{articleTitle}"%"
             </if>
         </where>
+        ORDER BY art.article_add_time DESC
+    </select>
+
+    <select id="getArticleDetails" resultType="com.csk2024.personalblog.vo.ArticleListVo">
+        SELECT art.article_id,
+        art.user_id,
+        u.user_name,
+        art.article_type_id,
+        artt.article_type_name,
+        art.article_title,
+        art.article_context,
+        art.article_add_time,
+        art.article_good_number,
+        art.article_look_number,
+        art.article_collection_number
+        FROM article art
+        LEFT JOIN article_type AS artt ON art.article_type_id = artt.article_type_id
+        LEFT JOIN `user` AS u ON u.user_id = art.user_id
+        WHERE art.article_id = #{articleId}
     </select>
 </mapper>

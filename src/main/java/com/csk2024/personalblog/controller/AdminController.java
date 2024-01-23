@@ -27,6 +27,8 @@ import com.csk2024.personalblog.vo.ArticleListVo;
 import com.csk2024.personalblog.vo.ArticleTypeVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,6 +66,14 @@ public class AdminController {
     private AdTypeService adTypeService;
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private UserCollectionArticleService userCollectionArticleService;
+    @Autowired
+    private UserGoodArticleService userGoodArticleService;
+    @Autowired
+    private CommentService commentService;
+    @Autowired
+    private CommentReplyService commentReplyService;
 
     /**
      * 管理员登录页面
@@ -313,11 +323,26 @@ public class AdminController {
      */
     @PostMapping("/article/delete")
     @ResponseBody
+    @Transactional
     public CommonResult articleDelete(@NotBlank(message = "文章 id 不允许为空") String articleId){
-        if(articleService.removeById(articleId)){
-            return CommonResult.success("删除成功！");
+        if(!articleService.removeById(articleId)){
+            return CommonResult.failed("删除失败！");
         }
-        return CommonResult.failed("删除失败！");
+        try {
+            articleTagListService.remove(Wrappers.<ArticleTagList>lambdaQuery().eq(ArticleTagList::getArticleId, articleId));
+            userCollectionArticleService.remove(Wrappers.<UserCollectionArticle>lambdaQuery().eq(UserCollectionArticle::getArticleId, articleId));
+            userGoodArticleService.remove(Wrappers.<UserGoodArticle>lambdaQuery().eq(UserGoodArticle::getArticleId, articleId));
+            List<Comment> comments = commentService.list(Wrappers.<Comment>lambdaQuery().eq(Comment::getArticleId, articleId));
+            if(!comments.isEmpty()){
+                commentService.removeByIds(comments);
+                commentReplyService.remove(Wrappers.<CommentReply>lambdaQuery().in(CommentReply::getCommentId, comments));
+            }
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return CommonResult.failed("删除关联失败！");
+        }
+        return CommonResult.success("删除成功！");
+
     }
 
     /**

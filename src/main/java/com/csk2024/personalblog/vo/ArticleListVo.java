@@ -40,6 +40,11 @@ public class ArticleListVo {
     private String articleTitle;
 
     /**
+     * 文章内容
+     */
+    private String articleContext;
+
+    /**
      * 文章添加时间
      */
     private Date articleAddTime;

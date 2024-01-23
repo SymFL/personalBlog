@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.personalblog.personalblog.mapper.CommentReplyMapper">
+<mapper namespace="com.csk2024.personalblog.mapper.CommentReplyMapper">
 
     <resultMap id="BaseResultMap" type="com.csk2024.personalblog.entity.CommentReply">
             <id property="commentReplyId" column="comment_reply_id" jdbcType="VARCHAR"/>

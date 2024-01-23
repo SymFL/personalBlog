@@ -264,9 +264,9 @@ public class CommonUtils {
         }
         char[] chars = str.toCharArray();
         if(chars.length<=1){
-            return chars[0]+"**";
+            return chars[0]+"*******";
         }
-        return chars[0]+"**"+chars[chars.length-1];
+        return chars[0]+"*******"+chars[chars.length-1];
     }
 
 }

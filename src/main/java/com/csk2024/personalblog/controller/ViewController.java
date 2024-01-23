@@ -8,23 +8,27 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.csk2024.personalblog.dto.article.ArticleListPageDto;
-import com.csk2024.personalblog.entity.Ad;
-import com.csk2024.personalblog.entity.Link;
+import com.csk2024.personalblog.entity.*;
 import com.csk2024.personalblog.service.*;
 import com.csk2024.personalblog.utils.CommonPage;
+import com.csk2024.personalblog.utils.CommonResult;
 import com.csk2024.personalblog.utils.CommonUtils;
 import com.csk2024.personalblog.vo.ArticleListVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/")
@@ -39,6 +43,12 @@ public class ViewController {
     private AdService adService;
     @Autowired
     private LinkService linkService;
+    @Autowired
+    private ArticleTagService articleTagService;
+    @Autowired
+    private UserGoodArticleService userGoodArticleService;
+    @Autowired
+    private UserCollectionArticleService userCollectionArticleService;
 
     /**
      * 获取图像验证码
@@ -85,5 +95,67 @@ public class ViewController {
         List<Link> links = linkService.list(Wrappers.<Link>lambdaQuery().orderByAsc(Link::getLinkSort));
         model.addAttribute("links",links);
         return "/view/index";
+    }
+
+    /**
+     * 文章详情页面
+     */
+    @GetMapping("/article")
+    public String articleDetails(HttpServletRequest request,@RequestParam("articleID") String articleId, Model model){
+        ArticleListVo article = articleService.getArticleDetails(articleId);
+        article.setUserName(CommonUtils.getHideMiddleStr(article.getUserName()));
+        article.setArticleLookNumber(article.getArticleLookNumber() + 1);
+        Article article1 = new Article();
+        article1.setArticleId(article.getArticleId());
+        article1.setArticleLookNumber(article.getArticleLookNumber());
+        articleService.updateById(article1);
+        model.addAttribute("article",article);
+        List<ArticleTag> articleTagList = articleTagService.listTag(articleId);
+        model.addAttribute("articleTags",articleTagList);
+        return "/view/article";
+    }
+
+    @GetMapping("/article/good")
+    @ResponseBody
+    @Transactional
+    public CommonResult articleGood(HttpServletRequest request,String articleId){
+        User user = (User)request.getSession().getAttribute("user");
+        if(ObjectUtil.isNull(user)){
+            return CommonResult.failed("请先登录在点赞哦亲~");
+        }
+        UserGoodArticle userGoodArticleServiceOne = userGoodArticleService.getOne(Wrappers.<UserGoodArticle>lambdaQuery().eq(UserGoodArticle::getArticleId, articleId).eq(UserGoodArticle::getUserId,user.getUserId()));
+        if(Objects.nonNull(userGoodArticleServiceOne)){
+            return CommonResult.failed("感谢支持，已经点过赞了哦亲~");
+        }
+        UserGoodArticle userGoodArticle = new UserGoodArticle();
+        userGoodArticle.setArticleId(articleId);
+        userGoodArticle.setUserId(user.getUserId());
+        userGoodArticleService.save(userGoodArticle);
+        Article article = articleService.getById(articleId);
+        article.setArticleGoodNumber(article.getArticleGoodNumber()+1);
+        articleService.updateById(article);
+        return CommonResult.success("谢谢点赞~");
+    }
+
+    @GetMapping("/article/collection")
+    @ResponseBody
+    @Transactional
+    public CommonResult articleCollection(HttpServletRequest request,String articleId){
+        User user = (User)request.getSession().getAttribute("user");
+        if(ObjectUtil.isNull(user)){
+            return CommonResult.failed("请先登录在收藏哦亲~");
+        }
+        UserCollectionArticle userCollectionArticleServiceOne = userCollectionArticleService.getOne(Wrappers.<UserCollectionArticle>lambdaQuery().eq(UserCollectionArticle::getArticleId, articleId).eq(UserCollectionArticle::getUserId,user.getUserId()));
+        if(Objects.nonNull(userCollectionArticleServiceOne)){
+            return CommonResult.failed("该文章已经收藏了哦亲~ 快去个人中心看看吧~");
+        }
+        UserCollectionArticle userCollectionArticle = new UserCollectionArticle();
+        userCollectionArticle.setArticleId(articleId);
+        userCollectionArticle.setUserId(user.getUserId());
+        userCollectionArticleService.save(userCollectionArticle);
+        Article article = articleService.getById(articleId);
+        article.setArticleCollectionNumber(article.getArticleCollectionNumber()+1);
+        articleService.updateById(article);
+        return CommonResult.success("已经帮亲放到个人收藏里了哦~");
     }
 }

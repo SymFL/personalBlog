@@ -32,13 +32,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     }
 
     @Override
-    public IPage<ArticleListVo> listCollectionArticle(IPage<Article> page, String userId, String articleTitle) {
+    public IPage<ArticleListVo> listCollectionArticle(IPage<ArticleListVo> page, String userId, String articleTitle) {
         return articleMapper.listCollectionArticle(page,userId,articleTitle);
     }
 
     @Override
-    public IPage<ArticleListVo> listUserArticle(IPage<Article> page, String userId, String articleTitle) {
+    public IPage<ArticleListVo> listUserArticle(IPage<ArticleListVo> page, String userId, String articleTitle) {
         return articleMapper.listUserArticle(page,userId,articleTitle);
+    }
+
+    @Override
+    public ArticleListVo getArticleDetails(String articleId) {
+        return articleMapper.getArticleDetails(articleId);
     }
 }
 

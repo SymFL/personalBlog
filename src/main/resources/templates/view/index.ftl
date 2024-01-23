@@ -41,7 +41,7 @@
         <div class="cards">
             <#list articlePage.list as article>
                 <div class="col-md-4 col-sm-6 col-lg-3">
-                    <a class="card" href="###">
+                    <a class="card" href="/article?articleID=${article.articleId}">
                         <#if article.articleTypeName == "技术分享">
                             <img src="/img/ganyu.jpg" alt="">
                         </#if>

@@ -16,6 +16,7 @@ import com.csk2024.personalblog.vo.ArticleListVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,6 +47,14 @@ public class UserController {
     private ImgService imgService;
     @Autowired
     private ArticleTagListService articleTagListService;
+    @Autowired
+    private UserCollectionArticleService userCollectionArticleService;
+    @Autowired
+    private CommentService commentService;
+    @Autowired
+    private CommentReplyService commentReplyService;
+    @Autowired
+    private UserGoodArticleService userGoodArticleService;
 
     /**
      * 用户注册
@@ -89,7 +98,9 @@ public class UserController {
      * 用户登录
      */
     @GetMapping("/login")
-    public String userLogin() {
+    public String userLogin(HttpServletRequest request) {
+        String referer = request.getHeader("Referer");
+        request.getSession().setAttribute("referer",referer);
         return "/user/login";
     }
 
@@ -110,10 +121,20 @@ public class UserController {
             return CommonResult.failed("用户名或密码错误！");
         }
         if (user.getUserFrozen() == 1) {
-            return CommonResult.failed("用户名已被冻结，请联系站长！");
+            return CommonResult.failed("用户已被冻结，请联系站长！");
         }
         session.setAttribute("user", user);
-        return CommonResult.success("登陆成功！");
+        String originalUrl = (String) session.getAttribute("originalUrl");
+        if(StrUtil.isNotBlank(originalUrl)){
+            session.removeAttribute("originalUrl");
+            return CommonResult.success(originalUrl,"登录成功");
+        }
+        String referer = (String)session.getAttribute("referer");
+        if(StrUtil.isNotBlank(referer)){
+            session.removeAttribute("referer");
+            return CommonResult.success(referer,"登陆成功！");
+        }
+        return CommonResult.success("/index","登陆成功！");
     }
 
     /**
@@ -145,7 +166,7 @@ public class UserController {
     @GetMapping("/collection")
     public String userCollection(HttpServletRequest request, ArticleListPageDto articleListPageDto, Model model) {
         User user = (User) request.getSession().getAttribute("user");
-        IPage<Article> page = new Page<>(articleListPageDto.getPageNumber(), articleListPageDto.getPageSize());
+        IPage<ArticleListVo> page = new Page<>(articleListPageDto.getPageNumber(), articleListPageDto.getPageSize());
         IPage<ArticleListVo> articleListVoPage = articleService.listCollectionArticle(page, user.getUserId(), articleListPageDto.getArticleTitle());
         model.addAttribute("articlePage", CommonPage.restPage(articleListVoPage));
         if (StrUtil.isNotBlank(articleListPageDto.getArticleTitle())) {
@@ -160,7 +181,7 @@ public class UserController {
     @GetMapping("/article")
     public String userArticle(HttpServletRequest request, ArticleListPageDto articleListPageDto, Model model) {
         User user = (User) request.getSession().getAttribute("user");
-        IPage<Article> page = new Page<>(articleListPageDto.getPageNumber(), articleListPageDto.getPageSize());
+        IPage<ArticleListVo> page = new Page<>(articleListPageDto.getPageNumber(), articleListPageDto.getPageSize());
         IPage<ArticleListVo> articleListVoPage = articleService.listUserArticle(page, user.getUserId(), articleListPageDto.getArticleTitle());
         model.addAttribute("articlePage", CommonPage.restPage(articleListVoPage));
         if (StrUtil.isNotBlank(articleListPageDto.getArticleTitle())) {
@@ -169,17 +190,34 @@ public class UserController {
         return "/user/article";
     }
 
+    /**
+     * 文章上传页面
+     */
     @GetMapping("/article/public")
-    public String articlePublic(Model model) {
+    public String articlePublic(String articleId,Model model) {
         List<ArticleType> articleTypes = articleTypeService.list(Wrappers.<ArticleType>lambdaQuery().orderByAsc(ArticleType::getArticleTypeSort));
         model.addAttribute("articleTypes", articleTypes);
 
         List<ArticleTag> articleTags = articleTagService.list(Wrappers.<ArticleTag>lambdaQuery().orderByDesc(ArticleTag::getArticleTagAddTime));
         model.addAttribute("articleTags", articleTags);
 
+        if(StrUtil.isBlank(articleId)){
+            return "/user/articlePublic";
+        }
+
+        Article articleUpdate = articleService.getById(articleId);
+        model.addAttribute("articleUpdate",articleUpdate);
+        List<ArticleTagList> list = articleTagListService.list(Wrappers.<ArticleTagList>lambdaQuery().eq(ArticleTagList::getArticleId, articleId));
+        List<String> activeArticleTags = list.stream().map(ArticleTagList::getArticleTagId).toList();
+        model.addAttribute("activeArticleTags",activeArticleTags);
+
+
         return "/user/articlePublic";
     }
 
+    /**
+     * 图片上传
+     */
     @PostMapping("/upload/img")
     @ResponseBody
     public Map<String, Object> uploadImg(@RequestParam("img") MultipartFile file) {
@@ -227,13 +265,37 @@ public class UserController {
         }
     }
 
+    /**
+     * 文章上传
+     */
     @PostMapping("/article/upload")
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    public CommonResult articleUpload(HttpServletRequest request,@NotBlank(message = "文章标题不能为空") String articleTitle,@NotBlank(message = "文章类型不能为空") String articleTypeId,@NotBlank(message = "文章内容不能为空") String html,String articleTagIds){
+    public CommonResult articleUpload(HttpServletRequest request,@NotBlank(message = "文章标题不能为空") String articleTitle,@NotBlank(message = "文章类型不能为空") String articleTypeId,@NotBlank(message = "文章内容不能为空") String html,String articleTagIds,String articleId){
         String[] artTagIds = articleTagIds.split(",");
         User user = (User)request.getSession().getAttribute("user");
         Article article = new Article();
+        List<ArticleTagList> articleTagList = new ArrayList<>();
+
+        if(StrUtil.isNotBlank(articleId)){
+            article.setArticleId(articleId);
+            article.setArticleTypeId(articleTypeId);
+            article.setArticleTitle(articleTitle);
+            article.setArticleContext(html);
+            if(articleService.updateById(article)){
+                for (String articleTagId : artTagIds) {
+                    ArticleTagList articleTag = new ArticleTagList();
+                    articleTag.setArticleId(articleId);
+                    articleTag.setArticleTagId(articleTagId);
+                    articleTagList.add(articleTag);
+                }
+                articleTagListService.remove(Wrappers.<ArticleTagList>lambdaQuery().eq(ArticleTagList::getArticleId,articleId));
+                articleTagListService.saveBatch(articleTagList,50);
+                return CommonResult.success("修改成功!");
+            }
+            return CommonResult.failed("修改失败！");
+        }
+
         article.setUserId(user.getUserId());
         article.setArticleTypeId(articleTypeId);
         article.setArticleTitle(articleTitle);
@@ -243,7 +305,6 @@ public class UserController {
         article.setArticleLookNumber(0);
         article.setArticleCollectionNumber(0);
 
-        List<ArticleTagList> articleTagList = new ArrayList<>();
         if(articleService.save(article)){
             for (String articleTagId : artTagIds) {
                 ArticleTagList articleTag = new ArticleTagList();
@@ -255,6 +316,47 @@ public class UserController {
             return CommonResult.success("上传成功!");
         }
         return CommonResult.failed("上传失败！");
+    }
+
+    /**
+     * 删除文章
+     */
+    @PostMapping("/article/delete")
+    @ResponseBody
+    @Transactional
+    public CommonResult deleteArticle(@NotBlank(message = "文章 ID 不能为空") String articleId){
+        if(!(articleService.removeById(articleId))){
+            return CommonResult.failed("删除失败！");
+        }
+        try {
+            articleTagListService.remove(Wrappers.<ArticleTagList>lambdaQuery().eq(ArticleTagList::getArticleId, articleId));
+            userCollectionArticleService.remove(Wrappers.<UserCollectionArticle>lambdaQuery().eq(UserCollectionArticle::getArticleId, articleId));
+            userGoodArticleService.remove(Wrappers.<UserGoodArticle>lambdaQuery().eq(UserGoodArticle::getArticleId, articleId));
+            List<Comment> comments = commentService.list(Wrappers.<Comment>lambdaQuery().eq(Comment::getArticleId, articleId));
+            if(!comments.isEmpty()){
+                commentService.removeByIds(comments);
+                commentReplyService.remove(Wrappers.<CommentReply>lambdaQuery().in(CommentReply::getCommentId, comments));
+            }
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return CommonResult.failed("删除关联失败！");
+        }
+        return CommonResult.success("删除成功！");
+    }
+
+    @PostMapping("/collection/delete")
+    @ResponseBody
+    @Transactional
+    public CommonResult deleteCollectionArticle(@NotBlank(message = "文章 ID 不能为空") String articleId,HttpServletRequest request){
+        User user = (User)request.getSession().getAttribute("user");
+        if(userCollectionArticleService.remove(Wrappers.<UserCollectionArticle>lambdaQuery().eq(UserCollectionArticle::getArticleId, articleId).eq(UserCollectionArticle::getUserId,user.getUserId()))){
+            Article article = articleService.getById(articleId);
+            article.setArticleCollectionNumber(article.getArticleCollectionNumber()-1);
+            articleService.updateById(article);
+            return CommonResult.success("成功取消收藏！");
+        }
+        return CommonResult.failed("取消失败！");
+
     }
 
 }

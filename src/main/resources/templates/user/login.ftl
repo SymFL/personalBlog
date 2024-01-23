@@ -71,7 +71,8 @@
             },
             function (data) {
                 if (data.code === 200) {
-                    window.location.href = "/index";
+                    alert(data.message)
+                    window.location.href = data.data;
                     return;
                 }
                 zuiMsg(data.message);

@@ -16,7 +16,9 @@ public interface ArticleService extends IService<Article> {
 
     IPage<ArticleListVo> listArticle(IPage<ArticleListVo> page, String articleTitle, String articleType);
 
-    IPage<ArticleListVo> listCollectionArticle(IPage<Article> page, String userId, String articleTitle);
+    IPage<ArticleListVo> listCollectionArticle(IPage<ArticleListVo> page, String userId, String articleTitle);
 
-    IPage<ArticleListVo> listUserArticle(IPage<Article> page, String userId, String articleTitle);
+    IPage<ArticleListVo> listUserArticle(IPage<ArticleListVo> page, String userId, String articleTitle);
+
+    ArticleListVo getArticleDetails(String articleId);
 }
