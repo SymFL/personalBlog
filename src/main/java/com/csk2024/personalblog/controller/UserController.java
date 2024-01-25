@@ -52,8 +52,6 @@ public class UserController {
     @Autowired
     private CommentService commentService;
     @Autowired
-    private CommentReplyService commentReplyService;
-    @Autowired
     private UserGoodArticleService userGoodArticleService;
 
     /**
@@ -332,11 +330,7 @@ public class UserController {
             articleTagListService.remove(Wrappers.<ArticleTagList>lambdaQuery().eq(ArticleTagList::getArticleId, articleId));
             userCollectionArticleService.remove(Wrappers.<UserCollectionArticle>lambdaQuery().eq(UserCollectionArticle::getArticleId, articleId));
             userGoodArticleService.remove(Wrappers.<UserGoodArticle>lambdaQuery().eq(UserGoodArticle::getArticleId, articleId));
-            List<Comment> comments = commentService.list(Wrappers.<Comment>lambdaQuery().eq(Comment::getArticleId, articleId));
-            if(!comments.isEmpty()){
-                commentService.removeByIds(comments);
-                commentReplyService.remove(Wrappers.<CommentReply>lambdaQuery().in(CommentReply::getCommentId, comments));
-            }
+            commentService.remove(Wrappers.<Comment>lambdaQuery().eq(Comment::getArticleId, articleId));
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return CommonResult.failed("删除关联失败！");

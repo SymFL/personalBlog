@@ -14,14 +14,12 @@ import com.csk2024.personalblog.utils.CommonPage;
 import com.csk2024.personalblog.utils.CommonResult;
 import com.csk2024.personalblog.utils.CommonUtils;
 import com.csk2024.personalblog.vo.ArticleListVo;
+import com.csk2024.personalblog.vo.CommentVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,10 +32,6 @@ import java.util.Objects;
 @RequestMapping("/")
 public class ViewController {
     @Autowired
-    private UserService userService;
-    @Autowired
-    private ArticleTypeService articleTypeService;
-    @Autowired
     private ArticleService articleService;
     @Autowired
     private AdService adService;
@@ -49,6 +43,8 @@ public class ViewController {
     private UserGoodArticleService userGoodArticleService;
     @Autowired
     private UserCollectionArticleService userCollectionArticleService;
+    @Autowired
+    private CommentService commentService;
 
     /**
      * 获取图像验证码
@@ -112,9 +108,14 @@ public class ViewController {
         model.addAttribute("article",article);
         List<ArticleTag> articleTagList = articleTagService.listTag(articleId);
         model.addAttribute("articleTags",articleTagList);
+        List< CommentVo> comments = commentService.listComment(articleId);
+        model.addAttribute("comments",comments);
         return "/view/article";
     }
 
+    /**
+     * 点赞文章
+     */
     @GetMapping("/article/good")
     @ResponseBody
     @Transactional
@@ -137,6 +138,9 @@ public class ViewController {
         return CommonResult.success("谢谢点赞~");
     }
 
+    /**
+     * 收藏文章
+     */
     @GetMapping("/article/collection")
     @ResponseBody
     @Transactional
@@ -157,5 +161,41 @@ public class ViewController {
         article.setArticleCollectionNumber(article.getArticleCollectionNumber()+1);
         articleService.updateById(article);
         return CommonResult.success("已经帮亲放到个人收藏里了哦~");
+    }
+
+    /**
+     * 删除评论
+     */
+    @PostMapping("/article/comment/delete")
+    @ResponseBody
+    public CommonResult deleteComment(HttpServletRequest request,String commentId,String userId){
+        User user = (User) request.getSession().getAttribute("user");
+        if(Objects.isNull(user)){
+            return CommonResult.failed("删除失败，请先登录！");
+        }
+        if(!userId.equals(user.getUserId())){
+            return CommonResult.failed("删除失败，此评论非您发布！");
+        }
+        if(commentService.removeById(commentId)){
+            return CommonResult.success("删除成功！");
+        }
+        return CommonResult.failed("删除失败，请刷新重试！");
+    }
+
+    /**
+     * 发布评论
+     */
+    @PostMapping("/article/comment/publish")
+    @ResponseBody
+    public CommonResult publishComment(HttpServletRequest request,String context,String articleId){
+        Comment comment = new Comment();
+        comment.setCommentContext(context);
+        comment.setArticleId(articleId);
+        comment.setCommentTime(DateUtil.date());
+        comment.setUserId(((User) request.getSession().getAttribute("user")).getUserId());
+        if(commentService.save(comment)){
+            return CommonResult.success("评论发布成功");
+        }
+        return CommonResult.failed("评论发布失败");
     }
 }

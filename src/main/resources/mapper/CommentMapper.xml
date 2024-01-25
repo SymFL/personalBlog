@@ -9,11 +9,24 @@
             <result property="articleId" column="article_id" jdbcType="VARCHAR"/>
             <result property="userId" column="user_id" jdbcType="VARCHAR"/>
             <result property="commentTime" column="comment_time" jdbcType="TIMESTAMP"/>
-            <result property="commentGoodNumber" column="comment_good_number" jdbcType="INTEGER"/>
+            <result property="commentContext" column="comment_context" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         comment_id,article_id,user_id,
-        comment_time,comment_good_number
+        comment_time,comment_context
     </sql>
+
+    <select id="listComment" resultType="com.csk2024.personalblog.vo.CommentVo">
+        select c.comment_id,
+               c.article_id,
+               c.user_id,
+               user.user_name,
+               c.comment_time,
+               c.comment_context
+        from comment as c
+        left join user on c.user_id = user.user_id
+        where c.article_id = #{articleId}
+        order by c.comment_time desc
+    </select>
 </mapper>

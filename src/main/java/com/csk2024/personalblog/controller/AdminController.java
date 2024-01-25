@@ -72,8 +72,6 @@ public class AdminController {
     private UserGoodArticleService userGoodArticleService;
     @Autowired
     private CommentService commentService;
-    @Autowired
-    private CommentReplyService commentReplyService;
 
     /**
      * 管理员登录页面
@@ -332,11 +330,7 @@ public class AdminController {
             articleTagListService.remove(Wrappers.<ArticleTagList>lambdaQuery().eq(ArticleTagList::getArticleId, articleId));
             userCollectionArticleService.remove(Wrappers.<UserCollectionArticle>lambdaQuery().eq(UserCollectionArticle::getArticleId, articleId));
             userGoodArticleService.remove(Wrappers.<UserGoodArticle>lambdaQuery().eq(UserGoodArticle::getArticleId, articleId));
-            List<Comment> comments = commentService.list(Wrappers.<Comment>lambdaQuery().eq(Comment::getArticleId, articleId));
-            if(!comments.isEmpty()){
-                commentService.removeByIds(comments);
-                commentReplyService.remove(Wrappers.<CommentReply>lambdaQuery().in(CommentReply::getCommentId, comments));
-            }
+            commentService.remove(Wrappers.<Comment>lambdaQuery().eq(Comment::getArticleId, articleId));
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return CommonResult.failed("删除关联失败！");
